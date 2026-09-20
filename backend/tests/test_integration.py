@@ -11,19 +11,11 @@ Coverage:
   - Clarifications: ask, answer, anonymization
   - Rate limiting: middleware present
 """
-import asyncio
 import uuid
 from datetime import datetime, timezone, timedelta
-from typing import AsyncGenerator
 
 import pytest
-import pytest_asyncio
-from httpx import AsyncClient, ASGITransport
-
-from app.main import app
-from app.db.session import AsyncSessionLocal
-from app.db.base import Base
-from app.models.domain import RFQStatus
+from httpx import AsyncClient
 
 
 # ──────────────────────────────────────────────────────────────────────────────
