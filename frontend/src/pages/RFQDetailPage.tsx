@@ -173,6 +173,9 @@ export function RFQDetailPage({ rfqId, onBack }: RFQDetailPageProps) {
             </div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{rfq.title}</h2>
             {rfq.description && <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{rfq.description}</p>}
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+              <span className="font-medium">Delivery Location:</span> {rfq.delivery_location}
+            </p>
             <p className="text-xs text-gray-400 mt-1">
               Deadline: {new Date(rfq.submission_deadline).toLocaleString()}
             </p>

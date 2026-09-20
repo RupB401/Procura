@@ -36,6 +36,7 @@ class RFQ(Base):
     buyer_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True)
     title = Column(String(255), nullable=False)
     description = Column(Text)
+    delivery_location = Column(String(255), nullable=False, server_default="N/A")
     status = Column(SAEnum(RFQStatus, name="rfq_status"), default=RFQStatus.DRAFT, nullable=False, index=True)
     submission_deadline = Column(DateTime(timezone=True), nullable=False, index=True)
     currency_code = Column(String(3), nullable=False, default="USD")

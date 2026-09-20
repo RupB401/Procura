@@ -6,13 +6,16 @@ interface NavbarProps {
   toggleDarkMode: () => void;
   userRole?: string;
   onLogout?: () => void;
+  onMenuClick?: () => void;
 }
 
-export function Navbar({ darkMode, toggleDarkMode, userRole, onLogout }: NavbarProps) {
+export function Navbar({ darkMode, toggleDarkMode, userRole, onLogout, onMenuClick }: NavbarProps) {
   return (
     <nav className="fixed top-0 left-0 right-0 h-16 z-50 glass border-b px-6 flex items-center justify-between">
       <div className="flex items-center gap-4">
-        <Menu className="w-6 h-6 text-gray-600 dark:text-gray-300 cursor-pointer lg:hidden" />
+        <button onClick={onMenuClick} className="lg:hidden p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10">
+          <Menu className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+        </button>
         <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
           Procura
         </h1>

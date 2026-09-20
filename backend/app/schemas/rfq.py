@@ -23,6 +23,7 @@ class RFQItemResponse(RFQItemCreate):
 class RFQCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
+    delivery_location: str = Field(..., min_length=1, max_length=255)
     submission_deadline: datetime
     currency_code: str = Field(default="USD", min_length=3, max_length=3)
     items: List[RFQItemCreate] = Field(..., min_length=1)
@@ -31,6 +32,7 @@ class RFQCreate(BaseModel):
 class RFQUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = None
+    delivery_location: Optional[str] = Field(None, min_length=1, max_length=255)
     submission_deadline: Optional[datetime] = None
     currency_code: Optional[str] = Field(None, min_length=3, max_length=3)
 
@@ -40,6 +42,7 @@ class RFQResponse(BaseModel):
     buyer_id: UUID
     title: str
     description: Optional[str]
+    delivery_location: str
     status: RFQStatus
     submission_deadline: datetime
     currency_code: str
@@ -55,6 +58,7 @@ class RFQListResponse(BaseModel):
     id: UUID
     buyer_id: UUID
     title: str
+    delivery_location: str
     status: RFQStatus
     submission_deadline: datetime
     currency_code: str

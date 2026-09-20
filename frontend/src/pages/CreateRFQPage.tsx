@@ -18,6 +18,7 @@ interface CreateRFQPageProps {
 export function CreateRFQPage({ onBack, onCreated }: CreateRFQPageProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [deliveryLocation, setDeliveryLocation] = useState('');
   const [deadline, setDeadline] = useState('');
   const [currency, setCurrency] = useState('USD');
   const [items, setItems] = useState<RFQItemForm[]>([
@@ -42,6 +43,7 @@ export function CreateRFQPage({ onBack, onCreated }: CreateRFQPageProps) {
       const rfq = await api.post<RFQ>('/rfqs', {
         title,
         description: description || undefined,
+        delivery_location: deliveryLocation,
         submission_deadline: new Date(deadline).toISOString(),
         currency_code: currency,
         items: items.map((item) => ({
@@ -83,6 +85,12 @@ export function CreateRFQPage({ onBack, onCreated }: CreateRFQPageProps) {
             <label className={labelCls}>Description</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
               rows={3} className={inputCls} placeholder="Additional context for vendors..." />
+          </div>
+
+          <div>
+            <label className={labelCls}>Delivery Location *</label>
+            <input type="text" value={deliveryLocation} onChange={(e) => setDeliveryLocation(e.target.value)}
+              required className={inputCls} placeholder="e.g. New York Warehouse, or EXW" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

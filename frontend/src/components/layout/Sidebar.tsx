@@ -5,26 +5,25 @@ import { Link } from 'react-router-dom';
 interface SidebarProps {
   userRole?: string;
   activePath: string;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export function Sidebar({ userRole, activePath }: SidebarProps) {
+export function Sidebar({ userRole, activePath, isOpen, onClose }: SidebarProps) {
   const { deleteAccount } = useAuth();
   
   const buyerLinks = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'My RFQs', path: '/dashboard', icon: FileText },
   ];
 
   const vendorLinks = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Available RFQs', path: '/dashboard', icon: FileText },
-    { name: 'My Quotes', path: '/dashboard', icon: FileText },
   ];
 
   const links = userRole === 'BUYER' ? buyerLinks : userRole === 'VENDOR' ? vendorLinks : [];
 
   return (
-    <aside className="fixed left-0 top-16 bottom-0 w-64 glass border-r hidden lg:flex flex-col z-40">
+    <aside className={`fixed left-0 top-16 bottom-0 w-64 glass border-r flex flex-col z-40 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
       <div className="p-4 flex flex-col gap-2 flex-grow">
         {links.map((link) => {
           const Icon = link.icon;
@@ -33,6 +32,7 @@ export function Sidebar({ userRole, activePath }: SidebarProps) {
             <Link
               key={link.name}
               to={link.path}
+              onClick={onClose}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                 isActive 
                   ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium' 

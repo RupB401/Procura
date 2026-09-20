@@ -32,6 +32,7 @@ export interface RFQ {
   buyer_id: string;
   title: string;
   description: string | null;
+  delivery_location: string;
   status: RFQStatus;
   submission_deadline: string;
   currency_code: string;
@@ -44,6 +45,7 @@ export interface RFQListItem {
   id: string;
   buyer_id: string;
   title: string;
+  delivery_location: string;
   status: RFQStatus;
   submission_deadline: string;
   currency_code: string;

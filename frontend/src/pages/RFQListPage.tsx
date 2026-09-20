@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import type { RFQListItem, RFQStatus } from '../lib/types';
-import { Plus, FileText, Clock, CheckCircle, XCircle, ChevronRight, Loader2 } from 'lucide-react';
+import { Plus, FileText, Clock, CheckCircle, XCircle, ChevronRight, Loader2, Search, Filter } from 'lucide-react';
 
 const STATUS_STYLES: Record<RFQStatus, string> = {
   DRAFT: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
@@ -28,8 +28,17 @@ interface RFQListPageProps {
 export function RFQListPage({ onSelectRFQ, onCreateRFQ }: RFQListPageProps) {
   const { user } = useAuth();
   const [rfqs, setRfqs] = useState<RFQListItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<RFQStatus | 'ALL'>('ALL');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const filteredRfqs = rfqs.filter(rfq => {
+    const matchesSearch = rfq.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          (rfq.delivery_location && rfq.delivery_location.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesStatus = statusFilter === 'ALL' || rfq.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   useEffect(() => {
     api.get<RFQListItem[]>('/rfqs')
@@ -70,6 +79,35 @@ export function RFQListPage({ onSelectRFQ, onCreateRFQ }: RFQListPageProps) {
         )}
       </div>
 
+      {/* Search and Filter Bar */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input 
+            type="text" 
+            placeholder="Search by title or delivery location..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          />
+        </div>
+        <div className="relative w-full sm:w-48 shrink-0">
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <select 
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as RFQStatus | 'ALL')}
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm appearance-none"
+          >
+            <option value="ALL">All Statuses</option>
+            {user?.role === 'BUYER' && <option value="DRAFT">Draft</option>}
+            <option value="OPEN">Open</option>
+            <option value="UNDER_REVIEW">Under Review</option>
+            <option value="AWARDED">Awarded</option>
+            {user?.role === 'BUYER' && <option value="CANCELLED">Cancelled</option>}
+          </select>
+        </div>
+      </div>
+
       {isLoading && (
         <div className="flex justify-center py-16">
           <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -98,7 +136,7 @@ export function RFQListPage({ onSelectRFQ, onCreateRFQ }: RFQListPageProps) {
       )}
 
       <div className="space-y-3">
-        {rfqs.map((rfq) => (
+        {filteredRfqs.map((rfq) => (
           <button
             key={rfq.id}
             id={`rfq-item-${rfq.id}`}
@@ -120,6 +158,7 @@ export function RFQListPage({ onSelectRFQ, onCreateRFQ }: RFQListPageProps) {
                 <p className={`text-xs mt-1 ${isExpired(rfq.submission_deadline) && rfq.status === 'OPEN' ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'}`}>
                   Deadline: {formatDeadline(rfq.submission_deadline)}
                   {isExpired(rfq.submission_deadline) && rfq.status === 'OPEN' && ' · Expired'}
+                  {rfq.delivery_location && ` · Location: ${rfq.delivery_location}`}
                 </p>
               </div>
               <ChevronRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-blue-500 transition-colors shrink-0 mt-1" />

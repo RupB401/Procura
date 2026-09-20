@@ -38,56 +38,63 @@ Procura enables enterprise procurement workflows through a structured **Request 
 ```
 
 **Backend Layer Architecture:**
-```
-app/
-├── api/v1/         → Route handlers (controllers)
-├── schemas/        → Pydantic validation models (request/response)
-├── models/domain   → SQLAlchemy ORM models (database tables)
-├── services/       → Reusable business logic (audit logger)
-├── integrations/   → External system connectors (ERP transformer)
-├── middleware/     → Redis rate limiter
-└── core/           → Config, security (JWT/bcrypt), error types
-```
+# Procura - Enterprise RFQ Management Platform
 
----
+Procura is a B2B platform designed to streamline the Request for Quotation (RFQ) process. It enables Buyers to create and manage RFQs and Vendors to submit, review, and track quotations.
 
-## 📦 Prerequisites
+## Live Application URL
+The application is configured for deployment on Render.com via the provided `render.yaml` file.
+(Replace with live URL after deploying).
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) ≥ 4.x (with Docker Compose v2)
-- Git
+## Technology Stack
+- **Frontend**: React 18, Vite, Tailwind CSS, TypeScript, React Router DOM, @react-oauth/google
+- **Backend**: Python 3.11, FastAPI, SQLAlchemy (Async), Uvicorn, Pydantic
+- **Database**: PostgreSQL 15 (Relational Data), Redis 7 (Rate Limiting & Caching)
+- **Deployment**: Docker, Docker Compose, Render IaC (`render.yaml`)
 
-No local Python or Node.js installation required — everything runs inside containers.
+## Architecture Explanation
+- **Client-Server Separation**: The frontend is a single-page application (SPA) built with React that communicates with the backend via RESTful APIs.
+- **Async Backend**: FastAPI leverages asynchronous Python to handle high concurrency efficiently. Database operations use `asyncpg`.
+- **Database Migrations**: Alembic is used for version control of the database schema (e.g. cascading deletes, new columns).
+- **Authentication**: JWT-based authentication for securing endpoints, with middleware validating user roles (`BUYER` vs `VENDOR`) and an optional Google OAuth implementation.
+- **State Machine**: RFQ status transitions (DRAFT -> OPEN -> UNDER_REVIEW -> AWARDED) are strictly enforced in the backend routers.
+- **Concurrency Control**: "Awarding" a quote utilizes a pessimistic row-level lock (`SELECT FOR UPDATE`) to prevent race conditions when multiple buyers attempt to award simultaneously.
 
----
+## Features Implemented
+- **User Roles**: Buyer and Vendor roles with secure JWT login and registration.
+- **Buyer Features**: Create RFQs with line items, description, and delivery location. Close bidding, view quotes, and award contracts.
+- **Supplier Features**: Browse active RFQs, search/filter by title/location/status, ask clarification questions, and submit itemized quotations (price, lead time, notes).
+- **Interactive UI**: Responsive Tailwind design with glassmorphism elements, loading states, and error boundary handling.
 
-## ⚙️ Environment Setup
+## Assumptions & Limitations
+- **Email Delivery**: Actual email sending (e.g., SendGrid) for RFQ notifications is mocked/bypassed in this assignment scope.
+- **OAuth Setup**: A dummy Google Client ID is used for showcase purposes. In a real environment, the `VITE_GOOGLE_CLIENT_ID` environment variable must be provided.
+- **Mock Data**: A seed script (`backend/seed.py`) is provided to quickly populate the database with dummy users and RFQs for demonstration.
 
-1. **Clone the repository:**
+## Setup Instructions (Local Development)
+
+### Prerequisites
+- Docker and Docker Compose installed.
+- (Optional) Python 3.11+ and Node 20+ if running outside Docker.
+
+### Running with Docker Compose
+1. Clone the repository.
+2. Run the application:
    ```bash
-   git clone https://github.com/RupB401/Procura.git
-   cd Procura
+   docker-compose up --build -d
    ```
-
-2. **Create the environment file:**
+3. Initialize dummy data for testing:
    ```bash
-   cp .env.example .env
+   docker exec rfq_fastapi_backend python seed.py
    ```
-   The defaults work out of the box for local development. Edit `.env` to change secrets for production.
+4. Access the application:
+   - Frontend: `http://localhost:3000`
+   - Backend API Docs: `http://localhost:8001/api/v1/docs`
 
----
-
-## 🚀 How to Start with Docker Compose
-
-```bash
-docker compose up --build
-```
-
-This single command will:
-1. Build the backend and frontend images
-2. Start PostgreSQL and Redis
-3. Wait for health checks to pass
-4. Start the FastAPI backend (with hot-reload)
-5. Start the Vite React frontend (with HMR)
+### Test Accounts (from seed data)
+- **Buyer**: `buyer@test.com` / `TestPass123!`
+- **Vendor 1**: `vendor1@test.com` / `TestPass123!`
+- **Vendor 2**: `vendor2@test.com` / `TestPass123!`
 
 | Service  | URL |
 |---|---|

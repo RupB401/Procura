@@ -50,6 +50,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth()
   const [darkMode, setDarkMode] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const location = useLocation()
 
   const toggleDarkMode = () => {
@@ -60,6 +61,10 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     })
   }
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen((prev) => !prev)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar
@@ -67,11 +72,25 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
         toggleDarkMode={toggleDarkMode}
         userRole={user!.role}
         onLogout={logout}
+        onMenuClick={toggleMobileMenu}
       />
-      <Sidebar userRole={user!.role} activePath={location.pathname} />
+      <Sidebar 
+        userRole={user!.role} 
+        activePath={location.pathname} 
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+      />
       <main className="lg:pl-64 pt-16">
         {children}
       </main>
+      
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
     </div>
   )
 }
