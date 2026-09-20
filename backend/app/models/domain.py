@@ -33,7 +33,7 @@ class RFQ(Base):
     __tablename__ = "rfqs"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    buyer_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="RESTRICT"), index=True)
+    buyer_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True)
     title = Column(String(255), nullable=False)
     description = Column(Text)
     status = Column(SAEnum(RFQStatus, name="rfq_status"), default=RFQStatus.DRAFT, nullable=False, index=True)
@@ -64,7 +64,7 @@ class Quote(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     rfq_id = Column(UUID(as_uuid=True), ForeignKey("rfqs.id", ondelete="CASCADE"), index=True)
-    vendor_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="RESTRICT"), index=True)
+    vendor_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True)
     status = Column(SAEnum(QuoteStatus, name="quote_status"), default=QuoteStatus.SUBMITTED, nullable=False)
     total_bid_amount = Column(Numeric(15, 2), nullable=False)
     submitted_at = Column(DateTime(timezone=True), server_default=func.now())

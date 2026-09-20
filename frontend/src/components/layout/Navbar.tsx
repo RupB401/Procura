@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Moon, Sun, Menu, UserCircle } from 'lucide-react';
 
 interface NavbarProps {

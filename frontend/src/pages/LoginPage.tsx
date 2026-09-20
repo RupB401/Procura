@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AuthLayout } from '../components/layout/AuthLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, Loader2, Building2, Mail, Lock } from 'lucide-react';
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 type AuthMode = 'login' | 'register';
 
@@ -10,7 +11,7 @@ interface LoginPageProps {
 }
 
 export function LoginPage({ onLogin }: LoginPageProps) {
-  const { login, register } = useAuth();
+  const { login, googleLogin, register } = useAuth();
   const [mode, setMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -167,6 +168,35 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
           {mode === 'login' ? 'Sign In' : 'Create Account'}
         </button>
+
+        <div className="relative flex items-center py-2">
+          <div className="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
+          <span className="flex-shrink-0 mx-4 text-gray-400 text-xs">Or continue with</span>
+          <div className="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
+        </div>
+
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={async (credentialResponse: CredentialResponse) => {
+              if (credentialResponse.credential) {
+                setError(null);
+                setIsLoading(true);
+                try {
+                  await googleLogin(credentialResponse.credential);
+                  onLogin();
+                } catch (err: unknown) {
+                  setError(err instanceof Error ? err.message : 'Google login failed');
+                } finally {
+                  setIsLoading(false);
+                }
+              }
+            }}
+            onError={() => {
+              setError("Google login failed");
+            }}
+            useOneTap
+          />
+        </div>
       </form>
     </AuthLayout>
   );

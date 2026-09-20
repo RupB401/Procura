@@ -28,10 +28,17 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   const res = await fetch(`${BASE_URL}${path}`, { ...rest, headers });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => ({ detail: 'Unknown error' }));
-    const message = typeof errorData.detail === 'string'
-      ? errorData.detail
-      : JSON.stringify(errorData.detail);
+    const errorData = await res.json().catch(() => ({ detail: res.statusText || 'Unknown error' }));
+    let message = res.statusText || 'An error occurred';
+    if (typeof errorData.error?.message === 'string') {
+      message = errorData.error.message;
+    } else if (typeof errorData.detail === 'string') {
+      message = errorData.detail;
+    } else if (errorData.detail) {
+      message = typeof errorData.detail === 'object' ? JSON.stringify(errorData.detail) : String(errorData.detail);
+    } else if (errorData.message) {
+      message = String(errorData.message);
+    }
     throw new Error(message);
   }
 

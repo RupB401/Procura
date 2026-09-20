@@ -7,8 +7,10 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  googleLogin: (idToken: string) => Promise<void>;
   register: (email: string, password: string, company_name: string, role: string) => Promise<void>;
   logout: () => void;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -56,6 +58,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await login(email, password);
   };
 
+  const googleLogin = async (idToken: string) => {
+    const res = await api.post<{ access_token: string; token_type: string }>(
+      '/auth/google',
+      { id_token: idToken },
+      { skipAuth: true }
+    );
+    localStorage.setItem('access_token', res.access_token);
+    setToken(res.access_token);
+    await fetchMe();
+  };
+
+  const deleteAccount = async () => {
+    await api.delete('/auth/me');
+    logout();
+  };
+
   const logout = () => {
     localStorage.removeItem('access_token');
     setToken(null);
@@ -63,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, googleLogin, register, logout, deleteAccount }}>
       {children}
     </AuthContext.Provider>
   );
