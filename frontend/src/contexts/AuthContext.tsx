@@ -41,24 +41,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [token, fetchMe]);
 
   const login = async (email: string, password: string) => {
-    const form = new URLSearchParams();
-    form.append('username', email);
-    form.append('password', password);
-
-    const res = await fetch(`${import.meta.env.VITE_API_URL ?? 'http://localhost:8001/api/v1'}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: form.toString(),
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ detail: 'Login failed' }));
-      throw new Error(typeof err.detail === 'string' ? err.detail : 'Login failed');
-    }
-
-    const data = await res.json();
-    localStorage.setItem('access_token', data.access_token);
-    setToken(data.access_token);
+    const res = await api.post<{ access_token: string; token_type: string }>(
+      '/auth/login',
+      { email, password },
+      { skipAuth: true }
+    );
+    localStorage.setItem('access_token', res.access_token);
+    setToken(res.access_token);
     await fetchMe();
   };
 

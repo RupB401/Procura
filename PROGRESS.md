@@ -53,7 +53,10 @@
   - [x] Clarification Q&A panel
   - [x] Client-side auth guard + JWT token lifecycle management
 
-- [ ] **Phase 7: Verification & Handoff**
-  - [ ] End-to-end smoke tests (Buyer + Vendor flows)
-  - [ ] Docker stack full start (`docker-compose up`)
-  - [ ] README update with setup instructions
+- [x] **Phase 7: Verification & Handoff**
+  - [x] End-to-end smoke tests (Buyer + Vendor flows) — 13/13 PASS
+  - [x] Docker stack full start (`docker-compose up`)
+  - [x] README.md with all 13 Stage 28 requirements
+  - [x] Seed script with demo buyer, vendor, and sample OPEN RFQ
+  - [x] bcrypt==4.0.1 pinned for passlib compatibility
+  - [x] STUDY_NOTES.md updated for all phases

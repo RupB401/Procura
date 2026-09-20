@@ -125,3 +125,39 @@ type AppPage =
 3. `api.ts` reads it on every request and injects `Authorization` header
 4. On page reload, `AuthContext` calls `GET /auth/me` to re-validate the token
 5. If invalid (expired/tampered), token is cleared and user is logged out
+
+---
+
+## 7. Phase 7: Verification & Handoff
+
+### Dependency Gotcha: passlib + bcrypt Version Incompatibility
+`passlib==1.7.4` (released in 2020) uses internal bcrypt API `bcrypt.__about__.__version__` which was removed in `bcrypt>=4.1`. Solution: pin `bcrypt==4.0.1` in `requirements.txt`.
+
+### Seed Script Architecture
+The seed script (`backend/seed.py`) uses the same async SQLAlchemy session as the application. Key pattern:
+```python
+async with AsyncSessionLocal() as db:
+    ...
+    await db.commit()
+```
+It is idempotent — re-running it will detect existing records and skip creation (no duplicates).
+
+### Smoke Test Results (Stage 29 Definition of Done)
+
+| Test | Result |
+|---|---|
+| `/health` returns HTTP 200 | ✅ PASS |
+| `/ready` returns HTTP 200 | ✅ PASS |
+| Buyer login works | ✅ PASS |
+| Vendor login works | ✅ PASS |
+| Role-based access control (RBAC) | ✅ PASS |
+| Buyer can create an RFQ (DRAFT) | ✅ PASS |
+| Buyer can publish RFQ (DRAFT→OPEN) | ✅ PASS |
+| Vendor can discover OPEN RFQ | ✅ PASS |
+| Vendor can submit a quote | ✅ PASS |
+| Buyer can close bidding (OPEN→UNDER_REVIEW) | ✅ PASS |
+| Buyer can award a quote | ✅ PASS |
+| ERP purchase order payload generated on award | ✅ PASS |
+| Vendor correctly blocked from creating RFQ (HTTP 401) | ✅ PASS |
+
+**All 13 smoke tests passed.**
