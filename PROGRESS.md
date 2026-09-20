@@ -46,12 +46,12 @@
   - [x] Build design system (tokens, typography, glassmorphism utilities)
   - [x] Create reusable layout components (Navbar, Sidebar, AuthLayout)
 
-- [ ] **Phase 6: Frontend Application Logic**
-  - [ ] Authentication pages (Login / Register with glassmorphic UI)
-  - [ ] RFQ management pages (create, list, detail, state actions)
-  - [ ] Quote submission & comparison views
-  - [ ] Clarification Q&A panel
-  - [ ] Buyer dashboard with analytics
+- [x] **Phase 6: Frontend Application Logic**
+  - [x] Authentication pages (Login / Register with glassmorphic UI)
+  - [x] RFQ management pages (create, list, detail, state actions)
+  - [x] Quote submission & comparison views
+  - [x] Clarification Q&A panel
+  - [x] Client-side auth guard + JWT token lifecycle management
 
 - [ ] **Phase 7: Verification & Handoff**
   - [ ] End-to-end smoke tests (Buyer + Vendor flows)

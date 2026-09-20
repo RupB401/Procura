@@ -89,3 +89,39 @@ We initialized the frontend application using React, Vite, and TypeScript.
 *   **Tailwind CSS:** Configured strictly to support `class`-based Dark Mode.
 *   **Design System:** We built custom utility classes in `index.css` (`.glass`, `.glass-card`) using `backdrop-blur-md` and `bg-white/70` to strictly enforce the requested **Glassmorphic** aesthetics.
 *   **Layout Components:** Created reusable `Navbar`, `Sidebar`, and `AuthLayout` components. They dynamically react to user roles (`BUYER` vs `VENDOR`) and handle the Dark Mode toggle logic by mutating the DOM `classList`.
+
+---
+
+## 6. Phase 6: Frontend Application Logic
+
+### Architecture Pattern: Client-Side State Machine Router
+Instead of a full routing library (React Router), we use a simple discriminated union type `AppPage` in `App.tsx` to perform conditional rendering. This keeps the bundle minimal and the logic transparent.
+
+```
+type AppPage =
+  | { name: 'rfq-list' }
+  | { name: 'rfq-create' }
+  | { name: 'rfq-detail'; id: string }
+```
+
+### Components Built
+
+| File | Role |
+|---|---|
+| `lib/api.ts` | Fetch wrapper that injects `Authorization: Bearer <token>` and JSON-parses errors |
+| `lib/types.ts` | TypeScript interfaces mirroring the backend Pydantic schemas |
+| `contexts/AuthContext.tsx` | React Context providing `login`, `register`, `logout`, and `user` state; persists JWT in `localStorage` |
+| `pages/LoginPage.tsx` | Glassmorphic auth form with tab-switch between Sign In / Register and role selector |
+| `pages/RFQListPage.tsx` | Role-aware RFQ list; Buyer sees own RFQs, Vendor sees OPEN/UNDER_REVIEW; status badges |
+| `pages/CreateRFQPage.tsx` | Dynamic multi-item RFQ creation form with quantity/UOM inputs |
+| `pages/RFQDetailPage.tsx` | Full detail view: state transition actions, vendor quote submission, buyer quote comparison with award button, clarification Q&A panel |
+
+### Security Pattern: Auth Guard
+`AppShell` checks `isLoading` then `user`. If `user` is `null`, it renders `<LoginPage>` — effectively a client-side auth guard without a router.
+
+### Token Flow
+1. User submits login form → backend returns `{ access_token: "..." }`
+2. Token stored in `localStorage`
+3. `api.ts` reads it on every request and injects `Authorization` header
+4. On page reload, `AuthContext` calls `GET /auth/me` to re-validate the token
+5. If invalid (expired/tampered), token is cleared and user is logged out

@@ -1,44 +1,99 @@
-import React from 'react'
-import { Moon, Sun } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { Navbar } from './components/layout/Navbar'
+import { Sidebar } from './components/layout/Sidebar'
+import { LoginPage } from './pages/LoginPage'
+import { RFQListPage } from './pages/RFQListPage'
+import { CreateRFQPage } from './pages/CreateRFQPage'
+import { RFQDetailPage } from './pages/RFQDetailPage'
+import { Loader2 } from 'lucide-react'
+import type { RFQ } from './lib/types'
 
-function App() {
-  const [darkMode, setDarkMode] = React.useState(false)
+type AppPage =
+  | { name: 'rfq-list' }
+  | { name: 'rfq-create' }
+  | { name: 'rfq-detail'; id: string }
+
+function AppShell() {
+  const { user, isLoading, logout } = useAuth()
+  const [darkMode, setDarkMode] = useState(false)
+  const [page, setPage] = useState<AppPage>({ name: 'rfq-list' })
 
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode)
-    if (!darkMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
+    setDarkMode((prev) => {
+      const next = !prev
+      document.documentElement.classList.toggle('dark', next)
+      return next
+    })
+  }
+
+  // Reset to list view on login/logout
+  useEffect(() => {
+    setPage({ name: 'rfq-list' })
+  }, [user?.id])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
+      </div>
+    )
+  }
+
+  // Unauthenticated — show login
+  if (!user) {
+    return <LoginPage onLogin={() => setPage({ name: 'rfq-list' })} />
+  }
+
+  // Authenticated shell
+  const renderPage = () => {
+    switch (page.name) {
+      case 'rfq-list':
+        return (
+          <RFQListPage
+            onSelectRFQ={(id) => setPage({ name: 'rfq-detail', id })}
+            onCreateRFQ={() => setPage({ name: 'rfq-create' })}
+          />
+        )
+      case 'rfq-create':
+        return (
+          <CreateRFQPage
+            onBack={() => setPage({ name: 'rfq-list' })}
+            onCreated={(rfq: RFQ) => setPage({ name: 'rfq-detail', id: rfq.id })}
+          />
+        )
+      case 'rfq-detail':
+        return (
+          <RFQDetailPage
+            rfqId={page.id}
+            onBack={() => setPage({ name: 'rfq-list' })}
+          />
+        )
     }
   }
 
-  return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-4xl mx-auto">
-        <header className="flex justify-between items-center mb-12">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            Procura Enterprise
-          </h1>
-          <button 
-            onClick={toggleDarkMode}
-            className="p-2 rounded-full glass hover:bg-white/90 dark:hover:bg-gray-800/90 transition-colors"
-          >
-            {darkMode ? <Sun className="w-5 h-5 text-yellow-500" /> : <Moon className="w-5 h-5 text-slate-700" />}
-          </button>
-        </header>
+  const activePath = page.name === 'rfq-list' ? '/rfqs' : '/'
 
-        <main>
-          <div className="glass-card p-8 text-center space-y-4">
-            <h2 className="text-2xl font-semibold">Frontend Foundation Ready</h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              React, Vite, and Tailwind CSS with glassmorphism have been successfully configured.
-            </p>
-          </div>
-        </main>
-      </div>
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Navbar
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
+        userRole={user.role}
+        onLogout={logout}
+      />
+      <Sidebar userRole={user.role} activePath={activePath} />
+      <main className="lg:pl-64 pt-16">
+        {renderPage()}
+      </main>
     </div>
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppShell />
+    </AuthProvider>
+  )
+}
