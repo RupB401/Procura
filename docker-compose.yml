@@ -1,0 +1,87 @@
+networks:
+  rfq_network:
+    driver: bridge
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: rfq_postgres_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-rfq_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_rfq_password_2026}
+      POSTGRES_DB: ${POSTGRES_DB:-rfq_enterprise_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - rfq_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rfq_admin -d rfq_enterprise_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: rfq_redis_cache
+    command: redis-server --appendonly yes
+    ports:
+      - "6380:6379"
+    volumes:
+      - redisdata:/data
+    networks:
+      - rfq_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rfq_fastapi_backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://rfq_admin:secure_rfq_password_2026@db:5432/rfq_enterprise_db}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - JWT_SECRET=${JWT_SECRET:-dev_secret_key_change_me_in_prod}
+      - JWT_ACCESS_TOKEN_EXPIRE_MINUTES=${JWT_ACCESS_TOKEN_EXPIRE_MINUTES:-60}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
+      - RATE_LIMIT_GENERAL=${RATE_LIMIT_GENERAL:-60}
+      - RATE_LIMIT_AUTH=${RATE_LIMIT_AUTH:-10}
+      - RATE_LIMIT_QUOTE=${RATE_LIMIT_QUOTE:-10}
+    networks:
+      - rfq_network
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: rfq_react_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8001}
+    networks:
+      - rfq_network
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  redisdata:
