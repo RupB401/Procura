@@ -79,3 +79,13 @@ The Redis middleware uses a sliding log algorithm via Redis Sorted Sets (`ZSET`)
     $$If \ N < Limit_{max}: \text{Allow Request and add } T_{current} \text{ to set}$$
 
 The maximum limits are dynamically applied based on the route (e.g., Auth is strictly limited to 10 req/min, while generic routes allow 60 req/min).
+
+---
+
+## 5. Phase 5: Frontend Foundation
+
+We initialized the frontend application using React, Vite, and TypeScript.
+*   **Vite Configuration:** Set up to run on host `0.0.0.0` inside Docker, providing ultra-fast HMR during development.
+*   **Tailwind CSS:** Configured strictly to support `class`-based Dark Mode.
+*   **Design System:** We built custom utility classes in `index.css` (`.glass`, `.glass-card`) using `backdrop-blur-md` and `bg-white/70` to strictly enforce the requested **Glassmorphic** aesthetics.
+*   **Layout Components:** Created reusable `Navbar`, `Sidebar`, and `AuthLayout` components. They dynamically react to user roles (`BUYER` vs `VENDOR`) and handle the Dark Mode toggle logic by mutating the DOM `classList`.

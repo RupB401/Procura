@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+  
+  .dark body {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-gray-200/50 shadow-sm;
+  }
+  
+  .dark .glass {
+    @apply bg-gray-800/70 border-gray-700/50;
+  }
+  
+  .glass-card {
+    @apply glass rounded-xl;
+  }
+}

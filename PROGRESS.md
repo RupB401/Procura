@@ -40,11 +40,11 @@
   - [x] **Audit Logger** — immutable `audit_logs` writes on every state change
   - [x] **ERP Transformer** — structured purchase-order JSON payload on quote award
 
-- [ ] **Phase 5: Frontend Foundation**
-  - [ ] Initialize Vite + React + TypeScript project
-  - [ ] Configure Tailwind CSS with dark mode
-  - [ ] Build design system (tokens, typography, glassmorphism utilities)
-  - [ ] Create reusable layout components (Navbar, Sidebar, AuthLayout)
+- [x] **Phase 5: Frontend Foundation**
+  - [x] Initialize Vite + React + TypeScript project
+  - [x] Configure Tailwind CSS with dark mode
+  - [x] Build design system (tokens, typography, glassmorphism utilities)
+  - [x] Create reusable layout components (Navbar, Sidebar, AuthLayout)
 
 - [ ] **Phase 6: Frontend Application Logic**
   - [ ] Authentication pages (Login / Register with glassmorphic UI)
