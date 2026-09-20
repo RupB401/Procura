@@ -161,3 +161,7 @@ It is idempotent — re-running it will detect existing records and skip creatio
 | Vendor correctly blocked from creating RFQ (HTTP 401) | ✅ PASS |
 
 **All 13 smoke tests passed.**
+
+### Phase 8 & 9 (Testing & Cleanup)
+- **E2E Testing:** Due to asyncpg connection pooling issues with pytest-asyncio, the integration test suite was written to hit the live running Uvicorn server in a separate container using an httpx.AsyncClient (blackbox testing approach). This tests the real DB pool and real middleware stack.
+- **Security Cleanup:** Verified that bcrypt==4.0.1 provides passlib compat without issues and no sensitive hardcoded strings exist beyond dev defaults.

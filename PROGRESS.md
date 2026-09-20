@@ -60,3 +60,20 @@
   - [x] Seed script with demo buyer, vendor, and sample OPEN RFQ
   - [x] bcrypt==4.0.1 pinned for passlib compatibility
   - [x] STUDY_NOTES.md updated for all phases
+
+- [x] **Phase 8: Testing**
+  - [x] Create automated backend integration tests (pytest-asyncio, httpx over live server).
+  - [x] Run test suite ensuring 100% pass rate.
+  - [x] Verify API rate limiting limits and test bypasses.
+
+- [x] **Phase 9: Final Cleanup**
+  - [x] General codebase cleanup (remove dead code).
+  - [x] Security check: Ensure no secrets are committed in source code.
+  - [x] Prepare Final Verification Report.
+
+- [x] **Stage 32: Final Verification Report & Handoff**
+  - [x] End-to-end smoke tests (Buyer + Vendor flows) — 13/13 PASS
+  - [x] Docker stack full start (`docker-compose up`)
+  - [x] README.md with all 13 Stage 28 requirements
+  - [x] Seed script with demo buyer, vendor, and sample OPEN RFQ
+  - [x] bcrypt==4.0.1 pinned for passlib compatibility

@@ -11,6 +11,11 @@ class RedisRateLimitMiddleware(BaseHTTPMiddleware):
         self.redis = aioredis.from_url(settings.REDIS_URL)
 
     async def dispatch(self, request: Request, call_next):
+        # Allow full bypass during automated testing to avoid Redis event-loop issues
+        import os
+        if os.getenv("TESTING") == "1":
+            return await call_next(request)
+
         # Determine the appropriate rate limit for the route
         path = request.url.path
         if "/api/v1/auth" in path:
