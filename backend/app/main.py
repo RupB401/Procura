@@ -6,11 +6,23 @@ from app.api.v1 import auth, rfqs, quotes, clarifications
 
 from app.core.errors import RFQException
 
+from contextlib import asynccontextmanager
+from app.db.session import engine
+from app.db.base import Base
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Create database tables
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url=f"{settings.API_V1_STR}/docs",
     redoc_url=f"{settings.API_V1_STR}/redoc",
+    lifespan=lifespan,
 )
 
 # ── Exception handler ──────────────────────────────────────────────────────────
