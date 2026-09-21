@@ -156,6 +156,7 @@ function AppRoutes() {
 
 export default function App() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-client-id-for-showcase'
+  console.log("Using Google Client ID:", googleClientId);
   
   return (
     <GoogleOAuthProvider clientId={googleClientId}>

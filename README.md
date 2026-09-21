@@ -2,45 +2,11 @@
 
 > A production-grade, full-stack procurement platform built with **FastAPI**, **React**, **PostgreSQL**, and **Redis**, fully containerised with Docker Compose.
 
----
-
-## 📋 Project Overview
-
-Procura enables enterprise procurement workflows through a structured **Request for Quotation (RFQ)** process:
-
-- **Buyers** create RFQs, publish them to the marketplace, evaluate vendor bids, and award contracts.
-- **Vendors** discover open RFQs, submit competitive quotes, and engage in anonymised Q&A threads.
-- On award, the system generates a structured **ERP-compatible Purchase Order payload**.
-- All state changes are written to an immutable **Audit Log**.
-
----
-
-## 🏗 Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                     Docker Network                       │
-│                                                          │
-│   ┌──────────────┐        ┌──────────────────────────┐  │
-│   │   Frontend   │        │        Backend           │  │
-│   │  React/Vite  │──────▶│  FastAPI + SQLAlchemy     │  │
-│   │  Port: 3000  │  HTTP  │  Port: 8000 (int)        │  │
-│   └──────────────┘        │  Port: 8001 (host)       │  │
-│                           └──────────┬───────────────┘  │
-│                                      │                  │
-│                    ┌─────────────────┴──────────────┐   │
-│                    │                                │   │
-│             ┌──────▼──────┐              ┌──────────▼─┐ │
-│             │  PostgreSQL  │              │   Redis    │ │
-│             │  Port: 5432  │              │ Port: 6379 │ │
-│             └─────────────┘              └────────────┘ │
-└─────────────────────────────────────────────────────────┘
-```
-
-**Backend Layer Architecture:**
-# Procura - Enterprise RFQ Management Platform
-
 Procura is a B2B platform designed to streamline the Request for Quotation (RFQ) process. It enables Buyers to create and manage RFQs and Vendors to submit, review, and track quotations.
+
+## Live Application URL
+The application is configured for deployment on Render.com via the provided `render.yaml` file.
+(Replace with live URL after deploying).
 
 ## Live Application URL
 The application is configured for deployment on Render.com via the provided `render.yaml` file.

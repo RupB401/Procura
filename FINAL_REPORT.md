@@ -3,12 +3,13 @@
 ## 1. What was implemented
 A complete B2B RFQ procurement platform with a FastAPI backend (PostgreSQL + Redis) and a React/TypeScript frontend (Vite).
 Features implemented:
-- **Authentication:** JWT-based login and registration with Role-Based Access Control (BUYER and VENDOR).
-- **RFQ Management:** Buyers can create and publish RFQs. Vendors can browse OPEN RFQs.
+- **Authentication & Profiles:** JWT-based login, Role-Based Access Control (BUYER/VENDOR), Profile Management, and a direct Password Reset flow.
+- **RFQ Management:** Buyers can create (with Delivery Locations) and publish RFQs. Vendors can browse OPEN RFQs.
+- **Search & Filtering:** Real-time search and status-based filtering on the Dashboard.
 - **Quoting System:** Vendors can submit quotes on RFQ items. The backend enforces uniqueness and calculates total bid amounts.
 - **Awarding System:** Buyers can close bidding and award specific quotes. Awards trigger a mock ERP integration payload for Purchase Orders.
 - **Q&A System:** Vendors can ask questions anonymously. Buyers can answer them, and answers are broadcast to all vendors while maintaining vendor anonymity.
-- **Architecture:** Complete Docker Compose stack, database migrations via Alembic, and Redis rate limiting. Glassmorphic UI design system.
+- **Architecture:** Complete Docker Compose stack, database migrations via Alembic, and Redis rate limiting. Glassmorphic UI design system with dynamic Tailwind animations.
 
 ## 2. Project structure
 - `/backend`: FastAPI Python application.
@@ -50,4 +51,4 @@ Swagger/OpenAPI Documentation is automatically generated and hosted at:
 
 ## 8. Any deliberate deviations from the specification
 - **Testing Approach:** Due to `asyncpg` connection pooling issues with `pytest-asyncio` when using the ASGI test client, the test suite was refactored into a "blackbox" architecture where the test client makes real HTTP requests to the live `localhost:8000` server. This is a robust approach that tests the actual HTTP and middleware layers identically to real usage, rather than bypassing them.
-- **Frontend Routing:** Used a lightweight client-side state machine (`AppPage` union type) in `App.tsx` instead of `react-router-dom` to reduce external dependency weight, as the app structure is shallow and highly focused.
+- **Frontend Routing:** Initially built with a lightweight state machine, but fully migrated to `react-router-dom` to support deep linking and dedicated page components like `/dashboard/profile` and `/dashboard/rfq/:id`.

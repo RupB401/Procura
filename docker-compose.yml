@@ -58,6 +58,7 @@ services:
       - RATE_LIMIT_GENERAL=${RATE_LIMIT_GENERAL:-60}
       - RATE_LIMIT_AUTH=${RATE_LIMIT_AUTH:-10}
       - RATE_LIMIT_QUOTE=${RATE_LIMIT_QUOTE:-10}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
     networks:
       - rfq_network
     depends_on:
@@ -78,6 +79,7 @@ services:
       - /app/node_modules
     environment:
       - VITE_API_URL=${VITE_API_URL:-http://localhost:8001/api/v1}
+      - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
     networks:
       - rfq_network
     depends_on:
