@@ -7,7 +7,7 @@ from google.auth.transport import requests as google_requests
 
 from app.db.session import get_db
 from app.models.domain import User
-from app.schemas.user import UserCreate, UserResponse, LoginRequest, Token, GoogleLoginRequest
+from app.schemas.user import UserCreate, UserUpdate, UserResponse, LoginRequest, Token, GoogleLoginRequest, PasswordResetRequest
 from app.core.security import get_password_hash, verify_password, create_access_token
 from app.core.errors import ValidationException, AuthException
 from app.api.deps import get_current_user
@@ -93,3 +93,27 @@ async def delete_me(current_user: User = Depends(get_current_user), db: AsyncSes
     await db.delete(current_user)
     await db.commit()
     return Response(status_code=204)
+
+@router.patch("/me", response_model=UserResponse)
+async def update_me(update_data: UserUpdate, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    if update_data.company_name is not None:
+        current_user.company_name = update_data.company_name
+    if update_data.password is not None:
+        current_user.hashed_password = get_password_hash(update_data.password)
+    
+    await db.commit()
+    await db.refresh(current_user)
+    return current_user
+
+@router.post("/reset-password")
+async def reset_password(reset_data: PasswordResetRequest, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(User).where(User.email == reset_data.email))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise AuthException("User with this email not found")
+        
+    user.hashed_password = get_password_hash(reset_data.new_password)
+    await db.commit()
+    
+    return {"message": "Password reset successfully"}

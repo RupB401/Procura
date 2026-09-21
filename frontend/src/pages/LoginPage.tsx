@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, Loader2, Building2, Mail, Lock } from 'lucide-react';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
-type AuthMode = 'login' | 'register';
+type AuthMode = 'login' | 'register' | 'forgot_password';
 
 interface LoginPageProps {
   onLogin: () => void;
@@ -28,10 +28,16 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     try {
       if (mode === 'login') {
         await login(email, password);
-      } else {
+        onLogin();
+      } else if (mode === 'register') {
         await register(email, password, companyName, role);
+        onLogin();
+      } else if (mode === 'forgot_password') {
+        const { api } = await import('../lib/api');
+        await api.resetPassword({ email, new_password: password });
+        setMode('login');
+        setError('Password reset successfully! You can now log in.');
       }
-      onLogin();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -101,9 +107,29 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
         {/* Password */}
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Password
-          </label>
+          <div className="flex items-center justify-between">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {mode === 'forgot_password' ? 'New Password' : 'Password'}
+            </label>
+            {mode === 'login' && (
+              <button
+                type="button"
+                onClick={() => { setMode('forgot_password'); setError(null); }}
+                className="text-xs font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+              >
+                Forgot password?
+              </button>
+            )}
+            {mode === 'forgot_password' && (
+              <button
+                type="button"
+                onClick={() => { setMode('login'); setError(null); }}
+                className="text-xs font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+              >
+                Back to Login
+              </button>
+            )}
+          </div>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -163,10 +189,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           id="auth-submit"
           type="submit"
           disabled={isLoading}
-          className="w-full py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold text-sm hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold text-sm hover:from-blue-700 hover:to-indigo-700 hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
         >
           {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-          {mode === 'login' ? 'Sign In' : 'Create Account'}
+          {mode === 'login' ? 'Sign In' : mode === 'register' ? 'Create Account' : 'Reset Password'}
         </button>
 
         <div className="relative flex items-center py-2">

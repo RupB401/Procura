@@ -9,6 +9,14 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
+class UserUpdate(BaseModel):
+    company_name: str | None = None
+    password: str | None = None
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+    new_password: str
+
 class UserResponse(UserBase):
     id: UUID
     

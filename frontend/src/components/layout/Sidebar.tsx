@@ -1,4 +1,4 @@
-import { FileText, LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard, UserCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
@@ -14,10 +14,12 @@ export function Sidebar({ userRole, activePath, isOpen, onClose }: SidebarProps)
   
   const buyerLinks = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'Profile', path: '/dashboard/profile', icon: UserCircle },
   ];
 
   const vendorLinks = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'Profile', path: '/dashboard/profile', icon: UserCircle },
   ];
 
   const links = userRole === 'BUYER' ? buyerLinks : userRole === 'VENDOR' ? vendorLinks : [];

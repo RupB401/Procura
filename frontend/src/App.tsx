@@ -8,6 +8,7 @@ import { RFQListPage } from './pages/RFQListPage'
 import { CreateRFQPage } from './pages/CreateRFQPage'
 import { RFQDetailPage } from './pages/RFQDetailPage'
 import { LandingPage } from './pages/LandingPage'
+import { ProfilePage } from './pages/ProfilePage'
 import { Loader2 } from 'lucide-react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, useLocation } from 'react-router-dom'
 
@@ -23,7 +24,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
   
   if (!user) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/" replace />
   }
   
   return <>{children}</>
@@ -136,6 +137,14 @@ function AppRoutes() {
         <ProtectedRoute>
           <DashboardLayout>
             <RFQDetailWrapper />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/dashboard/profile" element={
+        <ProtectedRoute>
+          <DashboardLayout>
+            <ProfilePage />
           </DashboardLayout>
         </ProtectedRoute>
       } />

@@ -48,6 +48,20 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 }
 
 export const api = {
+  getMe: <T>() => request<T>('/auth/me'),
+
+  updateMe: <T>(data: { company_name?: string; password?: string }) =>
+    request<T>('/auth/me', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
+  resetPassword: <T>(data: any) =>
+    request<T>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
   get: <T>(path: string, opts?: RequestOptions) =>
     request<T>(path, { method: 'GET', ...opts }),
 
