@@ -35,11 +35,23 @@ class Settings(BaseSettings):
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
+        origins = []
         if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, (list, str)):
-            return v
-        raise ValueError(v)
+            origins = [i.strip() for i in v.split(",") if i.strip() != "*"]
+        elif isinstance(v, list):
+            origins = [i for i in v if i != "*"]
+            
+        # Hardcode the Render frontend URLs to guarantee it works for the demo
+        guaranteed_origins = [
+            "http://localhost:3000",
+            "https://procura-frontend-0jz6.onrender.com",
+            "https://procura-frontend.onrender.com"
+        ]
+        for url in guaranteed_origins:
+            if url not in origins:
+                origins.append(url)
+                
+        return origins
     
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
