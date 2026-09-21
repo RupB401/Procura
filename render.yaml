@@ -31,6 +31,7 @@ services:
   - type: redis
     name: procura-redis
     plan: free
+    ipAllowList: []
 
 databases:
   - name: procura-db
