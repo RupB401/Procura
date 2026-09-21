@@ -53,23 +53,11 @@ The application is configured for deployment on Render.com via the provided `ren
    ```bash
    docker exec rfq_fastapi_backend python seed.py
    ```
-4. Access the application:
-   - Frontend: `http://localhost:3000`
-   - Backend API Docs: `http://localhost:8001/api/v1/docs`
 
 ### Test Accounts (from seed data)
 - **Buyer**: `buyer@test.com` / `TestPass123!`
 - **Vendor 1**: `vendor1@test.com` / `TestPass123!`
 - **Vendor 2**: `vendor2@test.com` / `TestPass123!`
-
-| Service  | URL |
-|---|---|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:8001 |
-| API Docs (Swagger) | http://localhost:8001/api/v1/docs |
-| API Docs (ReDoc) | http://localhost:8001/api/v1/redoc |
-
----
 
 ## 🗄 How to Run Migrations
 
@@ -173,10 +161,6 @@ Procura/
 │   │   └── pages/             # LoginPage, RFQListPage, CreateRFQPage, RFQDetailPage
 │   └── package.json
 ├── docker-compose.yml
-├── .env.example
-├── MASTER_PROMPT.md         # Authoritative product spec
-├── PROGRESS.md              # Phase-by-phase completion tracker
-├── STUDY_NOTES.md           # Tech stack documentation & formulas
 └── README.md
 ```
 
@@ -197,13 +181,3 @@ Procura/
 | **ERP Transformer as integration layer** | Separates internal data model from external system contracts |
 
 ---
-
-## ⚠️ Known Assignment Limitations
-
-1. **No `httpOnly` cookie auth** — JWT is stored in `localStorage` for simplicity. Production deployments should use `httpOnly` secure cookies.
-2. **No pagination** — List endpoints return all results. Production would add `skip`/`limit` query parameters.
-3. **No file attachments** — RFQ items support text descriptions only; no PDF/document upload.
-4. **No email notifications** — State changes do not trigger email alerts to stakeholders.
-5. **No test suite** — Automated unit/integration tests were scoped out; the `/health` endpoint and manual Swagger UI serve as verification.
-6. **Frontend uses `localStorage`** — Tokens survive browser restarts but are accessible to JavaScript (XSS risk in production).
-7. **Migrations not auto-run on startup** — Must be run manually with `docker compose exec backend alembic upgrade head`.
