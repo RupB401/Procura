@@ -11,7 +11,7 @@ services:
           property: connectionString
       - key: REDIS_URL
         fromService:
-          type: pserv
+          type: redis
           name: procura-redis
           property: connectionString
       - key: JWT_SECRET
@@ -28,11 +28,9 @@ services:
       - key: VITE_API_URL
         value: "https://procura-backend.onrender.com/api/v1"
 
-  - type: pserv
+  - type: redis
     name: procura-redis
-    env: docker
-    repo: https://github.com/render-examples/redis.git
-    branch: master
+    plan: free
 
 databases:
   - name: procura-db
