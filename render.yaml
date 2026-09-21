@@ -1,6 +1,7 @@
 services:
   - type: web
     name: procura-backend
+    plan: free
     env: docker
     dockerContext: ./backend
     dockerfilePath: ./backend/Dockerfile
@@ -16,6 +17,7 @@ services:
 
   - type: web
     name: procura-frontend
+    plan: free
     env: docker
     dockerContext: ./frontend
     dockerfilePath: ./frontend/Dockerfile
