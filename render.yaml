@@ -9,8 +9,6 @@ services:
         fromDatabase:
           name: procura-db
           property: connectionString
-      - key: REDIS_URL
-        value: "redis://procura-redis:6379/0"
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGINS
@@ -24,12 +22,6 @@ services:
     envVars:
       - key: VITE_API_URL
         value: "https://procura-backend.onrender.com/api/v1"
-
-  - type: pserv
-    name: procura-redis
-    env: docker
-    repo: https://github.com/render-examples/redis.git
-    branch: master
 
 databases:
   - name: procura-db

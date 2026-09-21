@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.v1 import auth, rfqs, quotes, clarifications
-from app.middleware.rate_limit import RedisRateLimitMiddleware
+
 from app.core.errors import RFQException
 
 app = FastAPI(
@@ -29,7 +29,7 @@ if settings.CORS_ORIGINS:
     )
 
 # ── Rate Limiter ───────────────────────────────────────────────────────────────
-app.add_middleware(RedisRateLimitMiddleware)
+# app.add_middleware(RedisRateLimitMiddleware)
 
 # ── Routers ────────────────────────────────────────────────────────────────────
 app.include_router(auth.router,           prefix=f"{settings.API_V1_STR}/auth",           tags=["auth"])
